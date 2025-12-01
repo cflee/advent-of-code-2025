@@ -1,20 +1,35 @@
 fun main() {
     fun part1(input: List<String>): Int {
-        return input.size
+        var cur = 50
+        var ans = 0
+        input.forEach { line ->
+            val isLeft = line[0] == 'L'
+            val num = line.substring(1).toInt()
+            cur = (100 + cur + (if (isLeft) -num else num)) % 100
+            if (cur == 0) ans++
+        }
+        return ans
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        var cur = 50
+        var ans = 0
+        input.forEach { line ->
+            val isLeft = line[0] == 'L'
+            val num = line.substring(1).toInt()
+            ans += num / 100
+            val after = cur + (if (isLeft) -(num % 100) else (num % 100))
+            if ((cur > 0 && after < 0) || after > 100) ans++
+            cur = after.mod(100)
+            if (cur == 0) ans++
+        }
+        return ans
     }
 
-    // Test if implementation meets criteria from the description, like:
-    check(part1(listOf("test_input")) == 1)
-
-    // Or read a large test input from the `src/Day01_test.txt` file:
     val testInput = readInput("Day01_test")
-    check(part1(testInput) == 1)
+    println(part1(testInput)) // 3
+    println(part2(testInput)) // 6
 
-    // Read the input from the `src/Day01.txt` file.
     val input = readInput("Day01")
     part1(input).println()
     part2(input).println()
