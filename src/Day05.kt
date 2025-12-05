@@ -1,5 +1,3 @@
-import kotlin.math.max
-
 fun main() {
     fun part1(input: List<String>): Long {
         val freshRanges = mutableListOf<Pair<Long, Long>>()
@@ -9,7 +7,6 @@ fun main() {
             if (!rangeOver) {
                 if (line == "") {
                     rangeOver = true
-                    freshRanges.sortWith(compareBy({ it.first }, { it.second }))
                     return@forEach
                 }
                 val range = line.split("-").map { it.toLong() }
@@ -26,29 +23,26 @@ fun main() {
 
     fun part2(input: List<String>): Long {
         val freshRanges = mutableListOf<Pair<Long, Long>>()
-        var rangeOver = false
-        input.forEach { line ->
-            if (!rangeOver) {
-                if (line == "") {
-                    rangeOver = true
-                    return@forEach
-                }
-                val range = line.split("-").map { it.toLong() }
-                freshRanges.add(range[0] to range[1])
-            }
+        for (i in input.indices) {
+            if (input[i] == "") break
+            val range = input[i].split("-").map { it.toLong() }
+            freshRanges.add(range[0] to range[1])
         }
+        var end = 0L
+        var answer = 0L
         freshRanges.sortWith(compareBy({ it.first }, { it.second }))
-        val mergedRanges = mutableListOf<Pair<Long, Long>>()
         freshRanges.forEach { range ->
-            if (mergedRanges.isNotEmpty() && mergedRanges.last().second >= range.first) {
-                val newRange = mergedRanges.last().first to max(mergedRanges.last().second, range.second)
-                mergedRanges.removeLast()
-                mergedRanges.add(newRange)
+            if (end >= range.first) {
+                if (end < range.second) {
+                    answer += range.second - end
+                    end = range.second
+                }
             } else {
-                mergedRanges.add(range)
+                end = range.second
+                answer += range.second - range.first + 1
             }
         }
-        return mergedRanges.sumOf { it.second - it.first + 1 }
+        return answer
     }
 
     val testInput = readInput("Day05_test")
